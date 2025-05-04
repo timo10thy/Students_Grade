@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <title>Student Grade Entry</title>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6 text-center text-indigo-600">Student Grade Entry</h1>
+
+    <div class="flex flex-col md:flex-row gap-4 mb-8 items-center">
+      <input 
+        type="text" 
+        id="nameInput" 
+        placeholder="Student Name" 
+        class="w-full md:w-auto flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+      <input 
+        type="number" 
+        id="scoreInput" 
+        placeholder="Score" 
+        class="w-full md:w-auto flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+      <button 
+        id="addBtn" 
+        class="w-full md:w-auto bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition duration-200"
+      >
+        Add Student
+      </button>
+    </div>
+
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">Student List</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border border-gray-200">
+          <thead class="bg-indigo-100">
+            <tr>
+              <th class="px-4 py-2 border">Name</th>
+              <th class="px-4 py-2 border">Score</th>
+              <th class="px-4 py-2 border">Grade</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody" class="text-center bg-white"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">Grade Summary</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border border-gray-200">
+          <thead class="bg-indigo-100">
+            <tr>
+              <th class="px-4 py-2 border">Grade</th>
+              <th class="px-4 py-2 border">Number of Students</th>
+              <th class="px-4 py-2 border">Percentage (%)</th>
+            </tr>
+          </thead>
+          <tbody id="gradeSummaryBody" class="text-center bg-white"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <a href="https://github.com/timo10thy" class="text-indigo-600 hover:underline">GitHub Link</a>
+    </div>
+  </div>
+
+  <script>
+    const students = [];
+    const gradeCounts = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+
+    const nameInput = document.getElementById('nameInput');
+    const scoreInput = document.getElementById('scoreInput');
+    const addBtn = document.getElementById('addBtn');
+    const studentTable = document.getElementById('studentTableBody');
+    const summaryTable = document.getElementById('gradeSummaryBody');
+
+    const getGrade = score => {
+      if (score > 90) return 'A';
+      if (score >= 80) return 'B';
+      if (score >= 70) return 'C';
+      if (score >= 60) return 'D';
+      return 'F';
+    };
+
+    const updateSummary = () => {
+      summaryTable.innerHTML = '';
+      const total = students.length;
+      const calculatePercentage = count => ((count / total) * 100).toFixed(2);
+
+      Object.entries(gradeCounts).forEach(([grade, count]) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="border px-4 py-2">${grade}</td>
+          <td class="border px-4 py-2">${count}</td>
+          <td class="border px-4 py-2">${total ? calculatePercentage(count) : 0}</td>
+        `;
+        summaryTable.appendChild(row);
+      });
+    };
+
+    const addStudentToTable = (name, score, grade) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="border px-4 py-2">${name}</td>
+        <td class="border px-4 py-2">${score}</td>
+        <td class="border px-4 py-2">${grade}</td>
+      `;
+      studentTable.appendChild(row);
+    };
+
+    addBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const score = parseInt(scoreInput.value);
+
+      if (!name || isNaN(score)) {
+        alert('Please enter both name and a valid score.');
+        return;
+      }
+
+      const grade = getGrade(score);
+      students.push({ name, score, grade });
+      gradeCounts[grade] += 1;
+
+      addStudentToTable(name, score, grade);
+      updateSummary();
+
+      nameInput.value = '';
+      scoreInput.value = '';
+    });
+
+    updateSummary();
+  </script>
+
+</body>
+</html>
